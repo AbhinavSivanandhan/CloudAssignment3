@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Photo Album Application Stack'
+
+Resources:
+  PhotoBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: 'photoalbumbucket'
+      AccessControl: 'PublicRead'
+    DeletionPolicy: Retain
+
+  FrontendBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: 'b2-frontend-b2'
+      AccessControl: 'PublicRead'
+    DeletionPolicy: Retain
+
+  CodePipelineBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: 'codepipeline-us-east-1-973881574665'
+    DeletionPolicy: Retain
+  # ElasticSearchDomain:
+  #   Type: 'AWS::Elasticsearch::Domain'
+  #   Properties:
+  #     DomainName: 'photos'
+  #     ElasticsearchVersion: '7.10'
+  #     NodeToNodeEncryptionOptions:
+  #       Enabled: true
+
+  SearchLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: 'search-photos'
+      Handler: 'index.handler'
+      Role: 'arn:aws:iam::333107834549:role/service-role/search-photos-role-f9qw39is'  # Replace with actual IAM role ARN
+      Runtime: 'python3.11'
+      Code:
+        S3Bucket: 'b2-frontend-b2'
+        S3Key: 'lambda-code/search-photos.zip'
+      Timeout: 30
+    DeletionPolicy: Retain
+
+  IndexLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: 'index-photos'
+      Handler: 'index.handler'
+      Role: 'arn:aws:iam::333107834549:role/service-role/index-photos-role-fn3b4n1b'  # Replace with actual IAM role ARN
+      Runtime: 'python3.11'
+      Code:
+        S3Bucket: 'b2-frontend-b2'
+        S3Key: 'lambda-code/index-photos.zip'
+      Timeout: 30
+    DeletionPolicy: Retain
+  # LexBot:
+  #   Type: 'AWS::Lex::Bot'
+  #   Properties:
+  #     Name: 'SearchBot'
+  #     Description: 'Amazon Lex bot for photo search'
+  #     Intents:
+  #       - IntentName: 'SearchIntent'
+  #         IntentVersion: '2'
+  #         IntentDescription: 'Intent for searching photos'
+  #         SampleUtterances:
+  #           - 'trees'
+  #           - 'birds'
+  #           - 'show me trees'
+  #           - 'show me photos with trees and birds in them'
+
+  # CodeBuildProject:
+  #   Type: 'AWS::CodeBuild::Project'
+  #   Properties:
+  #     Name: 'assignment3'
+  #     Source:
+  #       Type: 'CODEPIPELINE'  
+  #     Environment:
+  #       Type: 'LINUX_CONTAINER'
+  #       ComputeType: 'BUILD_GENERAL1_SMALL'
+  #       Image: 'aws/codebuild/standard:5.0'
+
+  ApiGateway:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: 'AI Photo Search'
+    DeletionPolicy: Retain
+
+  ApiGatewayGetResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      RestApiId: !Ref ApiGateway
+    DeletionPolicy: Retain
+
+  ApiGatewayGetMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: 'NONE'
+      HttpMethod: 'GET'
+      ResourceId: !Ref ApiGatewayGetResource
+      RestApiId: !Ref ApiGateway
+      Integration:
+        IntegrationHttpMethod: 'GET'
+        Type: 'AWS_PROXY'
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:s3-path'
+      MethodResponses:
+        - StatusCode: '200'
+    DeletionPolicy: Retain
+
+  ApiGatewayPutResource:
+    Type: 'AWS::ApiGateway::Resource'
+    Properties:
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      RestApiId: !Ref ApiGateway
+    DeletionPolicy: Retain
+
+  ApiGatewayPutMethod:
+    Type: 'AWS::ApiGateway::Method'
+    Properties:
+      AuthorizationType: 'NONE'
+      HttpMethod: 'PUT'
+      ResourceId: !Ref ApiGatewayPutResource
+      RestApiId: !Ref ApiGateway
+      Integration:
+        IntegrationHttpMethod: 'PUT'
+        Type: 'AWS_PROXY'
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:s3-path'
+      MethodResponses:
+        - StatusCode: '200'
+    DeletionPolicy: Retain
