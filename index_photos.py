@@ -18,11 +18,10 @@ rekognition = boto3.client('rekognition')
 REGION = 'us-east-1'
 ES_ENDPOINT = 'https://search-photos-sjehuplxoyqruwjxvgqrzxh3dq.us-east-1.es.amazonaws.com'
 INDEX_NAME = 'photos'
-ES_USER = 'masterusername'
-ES_PASS = 'Masterpassword#123'
+ES_USER = 'dummy'
+ES_PASS = 'dummy'
 ES_URL = ES_ENDPOINT
 # es = Elasticsearch()
-# awsauth = AWS4Auth('AKIAWNZY5YQYWZ33WA27', 'CDObKUxh+VUEKwX/StmaEY6sbs+9mXY0dvvRjF28', REGION, 'es')
 # http = urllib3.PoolManager()
 headers = {
     'Content-Type': 'application/json',

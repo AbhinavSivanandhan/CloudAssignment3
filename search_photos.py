@@ -11,9 +11,9 @@ import datetime
 import requests
 
 
-ES_URL = "https://search-photos-sjehuplxoyqruwjxvgqrzxh3dq.us-east-1.es.amazonaws.com/photos/_doc"
-ES_USER = 'masterusername'
-ES_PASS = 'MasterPassword#123'
+ES_URL = "https://dummylxoyqruwjxvgqrzxh3dq.us-east-1.es.amazonaws.com/photos/_doc"
+ES_USER = 'dummy'
+ES_PASS = 'dummy'
 
 # logger = logging.getLogger()
 # logger.setLevel(logging.DEBUG)
@@ -53,11 +53,11 @@ def lambda_handler(event, context):
 
 def get_labels(query):
     response = lex.recognize_text(
-        botId='YSKFKFTPQI',
+        botId='dummy',
         botAliasId='TSTALIASID',
         localeId="en_US",
         text=query,
-        sessionId="amhijetomachichichi"
+        sessionId="dummy"
     )
     print("lex-response : {}".format(json.dumps(response)))
 
