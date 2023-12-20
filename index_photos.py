@@ -3,11 +3,8 @@ import urllib.parse
 import boto3
 import requests 
 from datetime import datetime
-# from botocore.vendored import requests
 from botocore.exceptions import ClientError
-# import urllib3
-# from requests_aws4auth import AWS4Auth
-# from elasticsearch import Elasticsearch
+
 
 print('Loading function')
 
@@ -18,11 +15,9 @@ rekognition = boto3.client('rekognition')
 REGION = 'us-east-1'
 ES_ENDPOINT = 'https://search-photos-sjehuplxoyqruwjxvgqrzxh3dq.us-east-1.es.amazonaws.com'
 INDEX_NAME = 'photos'
-ES_USER = 'dummy'
-ES_PASS = 'dummy'
+
 ES_URL = ES_ENDPOINT
-# es = Elasticsearch()
-# http = urllib3.PoolManager()
+
 headers = {
     'Content-Type': 'application/json',
 }
@@ -58,12 +53,7 @@ def lambda_handler(event, context):
             'labels': labels_detected
         }
 
-        # AWS authentication
-        # awsauth = AWS4Auth('', 'YOUR_SECRET_KEY', REGION, 'es')
-        # headers = {"Content-Type": "application/json"}
-        # response = requests.put(ES_URL, headers=headers, data=es_data, auth=(ES_USER, ES_PASS))
 
-        # Store JSON object in Amazon ES
         url = f"{ES_ENDPOINT}/{INDEX_NAME}/_doc"
         headers = {"Content-Type": "application/json"}
         r = requests.post(url, headers=headers, data=json.dumps(es_data), auth=(ES_USER,ES_PASS))
@@ -82,64 +72,3 @@ def lambda_handler(event, context):
             'body': json.dumps({'Error': 'Error processing labels or storing in Amazon ES.'})
         }
 
-# from variables import *
-
-# import logging
-# import base64
-# import json
-# import boto3
-# import os
-# import time
-# import requests
-# import math
-# import dateutil.parser
-# import datetime
-# import requests
-
-
-# ES_URL = "https://search-photos-lstzdko5g6jwk4pyb2kwunzz6y.us-west-2.es.amazonaws.com/photos/_doc"
-# ES_USER = 'masteruser'
-# ES_PASS = '#EasyPass01'
-
-
-# def lambda_handler(event, context):
-
-#     print("event")
-#     print(event)
-#     s3_info = event['Records'][0]['s3']
-#     bucket_name = s3_info['bucket']['name']
-#     key_name = s3_info['object']['key']
-#     print(bucket_name)
-#     print(key_name)
-
-#     client = boto3.client('rekognition')
-#     pass_object = {'S3Object': {'Bucket': bucket_name, 'Name': key_name}}
-#     print("pass_object", pass_object)
-
-#     resp = client.detect_labels(Image=pass_object)
-#     print("rekognition response")
-#     print(resp)
-#     timestamp = time.time()
-
-#     labels = []
-
-#     for i in range(len(resp['Labels'])):
-#         labels.append(resp['Labels'][i]['Name'])
-#     print('<------------Now label list----------------->')
-#     print(labels)
-
-#     format = {'objectKey': key_name, 'bucket': bucket_name,
-#               'createdTimestamp': timestamp, 'labels': labels}
-#     print('I am here')
-#     url = ES_URL
-#     headers = {"Content-Type": "application/json"}
-
-#     r = requests.post(url, data=json.dumps(format).encode(
-#         "utf-8"), headers=headers, auth=(ES_USER, ES_PASS))
-
-#     print(r.text)
-#     print('I am here too')
-#     return {
-#         'statusCode': 200,
-#         'body': json.dumps('Hello from Lambda!')
-#     }
