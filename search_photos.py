@@ -12,11 +12,8 @@ import requests
 
 
 ES_URL = "https://dummylxoyqruwjxvgqrzxh3dq.us-east-1.es.amazonaws.com/photos/_doc"
-ES_USER = 'dummy'
-ES_PASS = 'dummy'
 
-# logger = logging.getLogger()
-# logger.setLevel(logging.DEBUG)
+
 
 headers = {"Content-Type": "application/json"}
 host = ES_URL
@@ -57,7 +54,7 @@ def get_labels(query):
         botAliasId='TSTALIASID',
         localeId="en_US",
         text=query,
-        sessionId="dummy"
+        sessionId="fvefdvsv"
     )
     print("lex-response : {}".format(json.dumps(response)))
 
